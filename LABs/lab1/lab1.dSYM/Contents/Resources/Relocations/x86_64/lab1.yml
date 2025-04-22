@@ -1,0 +1,8 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     '/Users/x_y/Downloads/HKUST/COMP/code_c++/lab1/lab1'
+relocations:
+  - { offset: 0x5153, size: 0x8, addend: 0x0, symName: __ZStL8__ioinit, symObjAddr: 0x16910, symBinAddr: 0x100002000, symSize: 0x0 }
+  - { offset: 0x52BC, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x2A, symBinAddr: 0x1000008AA, symSize: 0x48B }
+  - { offset: 0x542C, size: 0x8, addend: 0x0, symName: __ZNSt8ios_base9precisionEl, symObjAddr: 0x0, symBinAddr: 0x100000880, symSize: 0x2A }
+...

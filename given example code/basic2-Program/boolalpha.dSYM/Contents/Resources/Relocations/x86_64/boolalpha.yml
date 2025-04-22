@@ -1,0 +1,16 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     '/Users/x_y/Downloads/HKUST/COMP/code_c++/Basic2-Program/boolalpha'
+relocations:
+  - { offset: 0x52C6, size: 0x8, addend: 0x0, symName: __ZStL8__ioinit, symObjAddr: 0x1707A, symBinAddr: 0x100002000, symSize: 0x0 }
+  - { offset: 0x542F, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x136, symBinAddr: 0x100000A9A, symSize: 0x20B }
+  - { offset: 0x5465, size: 0x8, addend: 0x0, symName: __ZSt11noboolalphaRSt8ios_base, symObjAddr: 0x113, symBinAddr: 0x100000A77, symSize: 0x23 }
+  - { offset: 0x548D, size: 0x8, addend: 0x0, symName: __ZSt9boolalphaRSt8ios_base, symObjAddr: 0xF0, symBinAddr: 0x100000A54, symSize: 0x23 }
+  - { offset: 0x54C4, size: 0x8, addend: 0x0, symName: __ZNSt8ios_base6unsetfESt13_Ios_Fmtflags, symObjAddr: 0xC0, symBinAddr: 0x100000A24, symSize: 0x30 }
+  - { offset: 0x54FC, size: 0x8, addend: 0x0, symName: __ZNSt8ios_base4setfESt13_Ios_Fmtflags, symObjAddr: 0x8C, symBinAddr: 0x1000009F0, symSize: 0x34 }
+  - { offset: 0x554C, size: 0x8, addend: 0x0, symName: __ZStaNRSt13_Ios_FmtflagsS_, symObjAddr: 0x5F, symBinAddr: 0x1000009C3, symSize: 0x2D }
+  - { offset: 0x5582, size: 0x8, addend: 0x0, symName: __ZStoRRSt13_Ios_FmtflagsS_, symObjAddr: 0x32, symBinAddr: 0x100000996, symSize: 0x2D }
+  - { offset: 0x55B8, size: 0x8, addend: 0x0, symName: __ZStcoSt13_Ios_Fmtflags, symObjAddr: 0x24, symBinAddr: 0x100000988, symSize: 0xE }
+  - { offset: 0x55DF, size: 0x8, addend: 0x0, symName: __ZStorSt13_Ios_FmtflagsS_, symObjAddr: 0x12, symBinAddr: 0x100000976, symSize: 0x12 }
+  - { offset: 0x5615, size: 0x8, addend: 0x0, symName: __ZStanSt13_Ios_FmtflagsS_, symObjAddr: 0x0, symBinAddr: 0x100000964, symSize: 0x12 }
+...

@@ -1,0 +1,32 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     '/Users/x_y/Downloads/HKUST/COMP/code_c++/pa1_skeleton/pa1_do_not_submit'
+relocations:
+  - { offset: 0x51D2, size: 0x8, addend: 0x0, symName: __ZStL8__ioinit, symObjAddr: 0x1B1A9, symBinAddr: 0x100004000, symSize: 0x0 }
+  - { offset: 0x5250, size: 0x8, addend: 0x0, symName: __ZL16MAX_NUM_MONSTERS, symObjAddr: 0x1FF0, symBinAddr: 0x1000029D0, symSize: 0x0 }
+  - { offset: 0x5266, size: 0x8, addend: 0x0, symName: __ZL22MONSTER_TYPE_ADVANTAGE, symObjAddr: 0x1FF4, symBinAddr: 0x1000029D4, symSize: 0x0 }
+  - { offset: 0x527C, size: 0x8, addend: 0x0, symName: __ZL17MONSTER_TYPE_FIRE, symObjAddr: 0x1FF8, symBinAddr: 0x1000029D8, symSize: 0x0 }
+  - { offset: 0x5292, size: 0x8, addend: 0x0, symName: __ZL17MONSTER_TYPE_WIND, symObjAddr: 0x1FF9, symBinAddr: 0x1000029D9, symSize: 0x0 }
+  - { offset: 0x52A8, size: 0x8, addend: 0x0, symName: __ZL16MONSTER_TYPE_ICE, symObjAddr: 0x1FFA, symBinAddr: 0x1000029DA, symSize: 0x0 }
+  - { offset: 0x52DE, size: 0x8, addend: 0x0, symName: __ZL9POINT_WIN, symObjAddr: 0x1FFC, symBinAddr: 0x1000029DC, symSize: 0x0 }
+  - { offset: 0x52F4, size: 0x8, addend: 0x0, symName: __ZL10POINT_DRAW, symObjAddr: 0x2000, symBinAddr: 0x1000029E0, symSize: 0x0 }
+  - { offset: 0x545A, size: 0x8, addend: 0x0, symName: __ZStrsIcSt11char_traitsIcEERSt13basic_istreamIT_T0_ES6_PS3_, symObjAddr: 0x1FB4, symBinAddr: 0x100002908, symSize: 0x3B }
+  - { offset: 0x54CE, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x1F6D, symBinAddr: 0x1000028C1, symSize: 0x47 }
+  - { offset: 0x54F1, size: 0x8, addend: 0x0, symName: __Z8not_mainv, symObjAddr: 0x1DED, symBinAddr: 0x100002741, symSize: 0x180 }
+  - { offset: 0x5598, size: 0x8, addend: 0x0, symName: __Z9testcase7v, symObjAddr: 0x1C64, symBinAddr: 0x1000025B8, symSize: 0x189 }
+  - { offset: 0x564C, size: 0x8, addend: 0x0, symName: __Z9testcase6v, symObjAddr: 0x1AD3, symBinAddr: 0x100002427, symSize: 0x191 }
+  - { offset: 0x57AC, size: 0x8, addend: 0x0, symName: __Z9testcase5v, symObjAddr: 0x1942, symBinAddr: 0x100002296, symSize: 0x191 }
+  - { offset: 0x5900, size: 0x8, addend: 0x0, symName: __Z9testcase4v, symObjAddr: 0x17F0, symBinAddr: 0x100002144, symSize: 0x152 }
+  - { offset: 0x5A2E, size: 0x8, addend: 0x0, symName: __Z9testcase3v, symObjAddr: 0x163D, symBinAddr: 0x100001F91, symSize: 0x1B3 }
+  - { offset: 0x5B11, size: 0x8, addend: 0x0, symName: __Z9testcase2v, symObjAddr: 0x148A, symBinAddr: 0x100001DDE, symSize: 0x1B3 }
+  - { offset: 0x5BE8, size: 0x8, addend: 0x0, symName: __Z10normalGamev, symObjAddr: 0x896, symBinAddr: 0x1000011EA, symSize: 0xBF4 }
+  - { offset: 0x5E90, size: 0x8, addend: 0x0, symName: __Z20handleActionRecorderiPcS_PKi, symObjAddr: 0x7CB, symBinAddr: 0x10000111F, symSize: 0xCB }
+  - { offset: 0x5F5C, size: 0x8, addend: 0x0, symName: __Z22handleActionMiniBattleiPKcS0_S0_S0_PKiS2_RiS3_S3_S3_S3_, symObjAddr: 0x68A, symBinAddr: 0x100000FDE, symSize: 0x141 }
+  - { offset: 0x60A6, size: 0x8, addend: 0x0, symName: __Z18handleActionBattleiPKcS0_S0_S0_RiS1_S1_S1_S1_, symObjAddr: 0x576, symBinAddr: 0x100000ECA, symSize: 0x114 }
+  - { offset: 0x61D2, size: 0x8, addend: 0x0, symName: __Z16handleActionDuelPKcS0_S0_S0_iiRiS1_, symObjAddr: 0x29A, symBinAddr: 0x100000BEE, symSize: 0x2DC }
+  - { offset: 0x632A, size: 0x8, addend: 0x0, symName: __Z13copyCharArrayPKcPci, symObjAddr: 0x254, symBinAddr: 0x100000BA8, symSize: 0x46 }
+  - { offset: 0x6397, size: 0x8, addend: 0x0, symName: __Z11printCountsiii, symObjAddr: 0x150, symBinAddr: 0x100000AA4, symSize: 0x104 }
+  - { offset: 0x63E3, size: 0x8, addend: 0x0, symName: __Z11printPointsii, symObjAddr: 0xC9, symBinAddr: 0x100000A1D, symSize: 0x87 }
+  - { offset: 0x6420, size: 0x8, addend: 0x0, symName: __Z15printStatusText12ActionStatus, symObjAddr: 0x35, symBinAddr: 0x100000989, symSize: 0x94 }
+  - { offset: 0x6452, size: 0x8, addend: 0x0, symName: __Z14equalCharArrayPKcS0_, symObjAddr: 0x0, symBinAddr: 0x100000954, symSize: 0x35 }
+...
