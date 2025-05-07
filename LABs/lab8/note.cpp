@@ -441,7 +441,7 @@ bool append_note_content(Notes &notes, const char title[], const char content_to
       strcat(new_content, content_to_append); 
 
       set_note_content(notes.note_array[i], new_content);// use the previous function to free up memory
-      delete[] new_content;
+      delete[] new_content;////
       return true;
     
 
