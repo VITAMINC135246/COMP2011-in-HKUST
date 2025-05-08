@@ -992,29 +992,38 @@ bool add_topping_to_order(const int number, const char topping[], ToppingType *t
 
     // step3. topping type check
     ToppingType *Topping_Type_Pointer = find_topping_type(toppingTypes, topping);
-    if (Topping_Type_Pointer == nullptr)
+    if (Topping_Type_Pointer == nullptr || Topping_Type_Pointer->stock == 0)
     {
         return false;
     }
 
     // step 4. insert
-    ToppingListNode *New_Node = new ToppingListNode;
-    New_Node->topping = Topping_Type_Pointer;
-    New_Node->next = nullptr;
-
-    if (Previous_Node == nullptr)
+    ToppingListNode *Insert_Previous_Node = nullptr;
+    ToppingListNode *Insert_Current_Node = Order_Pointer->drink->toppings;
+    while (Insert_Current_Node &&
+           strcmp(Insert_Current_Node->topping->name, topping) < 0)
     {
-        New_Node->next = Order_Pointer->drink->toppings;
-        Order_Pointer->drink->toppings = New_Node;
+        Insert_Previous_Node = Insert_Current_Node;
+        Insert_Current_Node = Insert_Current_Node->next;
     }
+
+    ToppingListNode *New_Topping_Node = new ToppingListNode;
+    New_Topping_Node->topping = Topping_Type_Pointer;
+    New_Topping_Node->next = Insert_Current_Node;
+
+    // Insert to the front
+    if (Insert_Previous_Node == nullptr)
+    {
+        Order_Pointer->drink->toppings = New_Topping_Node;
+    }
+
+    // Insert to the middle/end
     else
     {
-        New_Node->next = Previous_Node->next;
-        Previous_Node->next = New_Node;
+        Insert_Previous_Node->next = New_Topping_Node;
     }
-
+    Topping_Type_Pointer->stock--;
     Order_Pointer->calories += Topping_Type_Pointer->calories;
-
     return true;
 }
 /**
@@ -1238,90 +1247,86 @@ MilkType *find_available_in_replacement_circle(MilkType *targetMilk, Replacement
  */
 int get_order_ready(const int order_number, Order *&pending_orders, Order *ready_orders[], ReplacementListNode *replacement_list)
 {
-    bool modified = false;
-
-
-
-    // check if pending list is empty or order not found
     if (pending_orders == nullptr)
-    {
         return 0;
-    }
-    Order *previous_order = nullptr;
-    Order *current_order = pending_orders;
-    while (current_order->number != order_number && current_order)
-    {
-        previous_order = current_order;
-        current_order = current_order->next;
-    }
-    if (current_order == nullptr)
-    {
-        return 0;
-    }
 
-    // remove the order from pending list
-    if (previous_order == nullptr)
+    // locate the target in pending
+    Order *Previous_Order = nullptr;
+    Order *Current_Order = pending_orders;
+    while (Current_Order && Current_Order->number != order_number)
     {
-        pending_orders = current_order->next;
+        Previous_Order = Current_Order;
+        Current_Order = Current_Order->next;
+    }
+    if (Current_Order == nullptr)
+        return 0;
+
+    bool Modified = false;
+
+    // check/replace milk
+    if (Current_Order->drink->milk->stock > 0)
+    {
+        Current_Order->drink->milk->stock--; // original milk stock is enough, directly deduct 1
     }
     else
     {
-        previous_order->next = current_order->next;
-    }
-    current_order->next = nullptr;
-
-    // check milk stock and replace if necessary
-    if (current_order->drink->milk->stock > 0)
-    {
-        current_order->drink->milk->stock--;
-    }
-    else
-    {
-        MilkType *replacement_milk = find_available_in_replacement_circle(
-            current_order->drink->milk, replacement_list);
-        if (replacement_milk == nullptr)
-        {
+        MilkType *ReplacementMilk =
+            find_available_in_replacement_circle(Current_Order->drink->milk,
+                                                 replacement_list);
+        if (ReplacementMilk == nullptr)
             return 0;
-        }
-        current_order->drink->milk = replacement_milk;
-        modified = true;
+
+        MilkType *OldMilk = Current_Order->drink->milk;
+        Current_Order->drink->milk = ReplacementMilk;
+        ReplacementMilk->stock--; // deduct replacement milk stock
+
+        Current_Order->calories +=
+            ReplacementMilk->calories - OldMilk->calories; // sync calories
+        Modified = true;
     }
 
-    // check and remove unavailable toppings
-    ToppingListNode *previous_topping = nullptr;
-    ToppingListNode *current_topping = current_order->drink->toppings;
-    while (current_topping)
+    // check toppings
+    ToppingListNode *Prev_Topping = nullptr;
+    ToppingListNode *Cur_Topping = Current_Order->drink->toppings;
+    while (Cur_Topping)
     {
-        if (current_topping->topping->stock > 0)
+        if (Cur_Topping->topping->stock > 0)
         {
-            current_topping->topping->stock--;
-            previous_topping = current_topping;
-            current_topping = current_topping->next;
+            Cur_Topping->topping->stock--; // stock is enough ➜ deduct 1
+            Prev_Topping = Cur_Topping;
+            Cur_Topping = Cur_Topping->next;
         }
         else
-        {
-            ToppingListNode *topping_to_delete = current_topping;
-            if (previous_topping == nullptr)
-            {
-                current_order->drink->toppings = current_topping->next;
-                current_topping = current_order->drink->toppings;
-            }
-            else
-            {
-                previous_topping->next = current_topping->next;
-                current_topping = previous_topping->next;
-            }
-            delete topping_to_delete;
-            modified = true;
+        { // stock is 0
+            ToppingListNode *Delete_Node = Cur_Topping;
+
+            if (Prev_Topping == nullptr) // delete the first one
+                Current_Order->drink->toppings = Cur_Topping->next;
+            else // delete middle/last one
+                Prev_Topping->next = Cur_Topping->next;
+
+            Cur_Topping = (Prev_Topping ? Prev_Topping->next
+                                        : Current_Order->drink->toppings);
+
+            Current_Order->calories -= Delete_Node->topping->calories; // deduct calories
+            delete Delete_Node;
+            Modified = true;
         }
     }
 
-    // move the order to ready list
-    int bucket = order_number % 10;
-    current_order->next = ready_orders[bucket];
-    ready_orders[bucket] = current_order;
+    // after confirming it can be made, remove it from pending
+    if (Previous_Order == nullptr)
+        pending_orders = Current_Order->next;
+    else
+        Previous_Order->next = Current_Order->next;
+    Current_Order->next = nullptr;
 
-    return modified ? 2 : 1;
+    // insert into corresponding ready bucket
+    int Bucket = order_number % 10;
+    Current_Order->next = ready_orders[Bucket];
+    ready_orders[Bucket] = Current_Order;
+
+    return Modified ? 2 : 1; // 2 = ORDER_READY_MODIFIED, 1 = PERFECT
 }
 
 // === Region: Destructors ===
