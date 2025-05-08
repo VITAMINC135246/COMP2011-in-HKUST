@@ -1311,8 +1311,9 @@ int get_order_ready(const int order_number, Order *&pending_orders, Order *ready
     }
 
     // move the order to ready list
-    current_order->next = ready_orders[0];
-    ready_orders[0] = current_order;
+    int bucket = order_number % 10;
+    current_order->next = ready_orders[bucket];
+    ready_orders[bucket] = current_order;
 
     return 1;
 }
@@ -1328,23 +1329,26 @@ int get_order_ready(const int order_number, Order *&pending_orders, Order *ready
 void delete_database(TeaType *&teaTypes, MilkType *&milkTypes, ToppingType *&toppingTypes)
 {
     // delete TeaType linked list
-    TeaType* teatea = teaTypes;
-    while (teatea != nullptr) {
-        TeaType* a = teatea->next;
+    TeaType *teatea = teaTypes;
+    while (teatea != nullptr)
+    {
+        TeaType *a = teatea->next;
         delete teatea;
-        teatea = a;                
+        teatea = a;
     }
     // delete MilkType ll
-    MilkType* milkmilk = milkTypes;
-    while (milkmilk != nullptr) {
-        MilkType* b = milkmilk->next;
+    MilkType *milkmilk = milkTypes;
+    while (milkmilk != nullptr)
+    {
+        MilkType *b = milkmilk->next;
         delete milkmilk;
         milkmilk = b;
     }
     // delete ToppingType ll
-    ToppingType* toppingtopping = toppingTypes;
-    while (toppingtopping != nullptr) {
-        ToppingType* c = toppingtopping->next;
+    ToppingType *toppingtopping = toppingTypes;
+    while (toppingtopping != nullptr)
+    {
+        ToppingType *c = toppingtopping->next;
         delete toppingtopping;
         toppingtopping = c;
     }
@@ -1359,10 +1363,11 @@ void delete_database(TeaType *&teaTypes, MilkType *&milkTypes, ToppingType *&top
 void delete_recipe(Drink **&recipes, int numRecipes)
 {
     // delete each Drink*
-    for (int i = 0; i < numRecipes; ++i) {
-       delete recipes[i];
+    for (int i = 0; i < numRecipes; ++i)
+    {
+        delete recipes[i];
     }
-    //for pointer array
+    // for pointer array
     delete[] recipes;
     recipes = nullptr;
     numRecipes = 0;
@@ -1375,14 +1380,16 @@ void delete_recipe(Drink **&recipes, int numRecipes)
  */
 void delete_pending_orders(Order *&pending)
 {
-    while (pending != nullptr) {
-        Order* current_order = pending;
-        pending = pending->next;  // break head
+    while (pending != nullptr)
+    {
+        Order *current_order = pending;
+        pending = pending->next; // break head
 
         // delete toppings list
-        ToppingListNode* topping_node = current_order->drink->toppings;
-        while (topping_node != nullptr) {
-            ToppingListNode* next_topping = topping_node->next;
+        ToppingListNode *topping_node = current_order->drink->toppings;
+        while (topping_node != nullptr)
+        {
+            ToppingListNode *next_topping = topping_node->next;
             delete topping_node;
             topping_node = next_topping;
         }
@@ -1400,16 +1407,19 @@ void delete_pending_orders(Order *&pending)
  */
 void delete_ready_orders(Order *ready_orders[])
 {
-    for (int index = 0; index < 10; ++index) {
-        Order* current_order = ready_orders[index];
-        while (current_order != nullptr) {
-            Order* order_to_delete = current_order;
+    for (int index = 0; index < 10; ++index)
+    {
+        Order *current_order = ready_orders[index];
+        while (current_order != nullptr)
+        {
+            Order *order_to_delete = current_order;
             current_order = current_order->next;
 
             // Delete toppings list
-            ToppingListNode* topping_node = order_to_delete->drink->toppings;
-            while (topping_node != nullptr) {
-                ToppingListNode* next_topping_node = topping_node->next;
+            ToppingListNode *topping_node = order_to_delete->drink->toppings;
+            while (topping_node != nullptr)
+            {
+                ToppingListNode *next_topping_node = topping_node->next;
                 delete topping_node;
                 topping_node = next_topping_node;
             }
@@ -1431,19 +1441,22 @@ void delete_ready_orders(Order *ready_orders[])
  */
 void delete_replacement_circle(ReplacementListNode *&replacement)
 {
-    if (replacement == nullptr) return;
+    if (replacement == nullptr)
+        return;
 
-    //make the tail's next = nullptr
-    ReplacementListNode* slow_pointer = replacement;
-    while (slow_pointer->next != replacement) {
+    // make the tail's next = nullptr
+    ReplacementListNode *slow_pointer = replacement;
+    while (slow_pointer->next != replacement)
+    {
         slow_pointer = slow_pointer->next;
     }
     slow_pointer->next = nullptr;
 
     // delete just like a normal linked list
-    ReplacementListNode* current_node = replacement;
-    while (current_node != nullptr) {
-        ReplacementListNode* temp_node = current_node->next;
+    ReplacementListNode *current_node = replacement;
+    while (current_node != nullptr)
+    {
+        ReplacementListNode *temp_node = current_node->next;
         delete current_node;
         current_node = temp_node;
     }
