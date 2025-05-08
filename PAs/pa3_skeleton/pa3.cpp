@@ -1238,6 +1238,10 @@ MilkType *find_available_in_replacement_circle(MilkType *targetMilk, Replacement
  */
 int get_order_ready(const int order_number, Order *&pending_orders, Order *ready_orders[], ReplacementListNode *replacement_list)
 {
+    bool modified = false;
+
+
+
     // check if pending list is empty or order not found
     if (pending_orders == nullptr)
     {
@@ -1280,6 +1284,7 @@ int get_order_ready(const int order_number, Order *&pending_orders, Order *ready
             return 0;
         }
         current_order->drink->milk = replacement_milk;
+        modified = true;
     }
 
     // check and remove unavailable toppings
@@ -1307,6 +1312,7 @@ int get_order_ready(const int order_number, Order *&pending_orders, Order *ready
                 current_topping = previous_topping->next;
             }
             delete topping_to_delete;
+            modified = true;
         }
     }
 
@@ -1315,7 +1321,7 @@ int get_order_ready(const int order_number, Order *&pending_orders, Order *ready
     current_order->next = ready_orders[bucket];
     ready_orders[bucket] = current_order;
 
-    return 1;
+    return modified ? 2 : 1;
 }
 
 // === Region: Destructors ===
