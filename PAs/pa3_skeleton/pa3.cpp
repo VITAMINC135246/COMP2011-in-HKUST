@@ -693,7 +693,7 @@ bool create_recipe(const char name[], const int id, const int price, const char 
     }
 
     // allocate memory and initialize the new Drink
-    Drink *newDrink = new Drink[1];
+    Drink *newDrink = new Drink;
     strcpy(newDrink->name, name);
     newDrink->id = id;
     newDrink->price = price;
@@ -755,7 +755,7 @@ bool remove_recipe(const char drink[], Drink **&recipes, int &numRecipes)
         return false; // nout found;
     }
 
-    delete[] recipes[index];
+    delete recipes[index];
 
     Drink **newReci = nullptr;
     if (numRecipes > 1)
@@ -817,7 +817,7 @@ bool create_order(Order *&pending, const int number, const char drink[], Drink *
     if (Reci_order == nullptr)
         return false; // still not find
 
-    //get the info from original reci or Reci_order
+    // get the info from original reci or Reci_order
     Drink *newDrink = new Drink;
     strcpy(newDrink->name, Reci_order->name);
     newDrink->id = -1;
@@ -826,68 +826,134 @@ bool create_order(Order *&pending, const int number, const char drink[], Drink *
     newDrink->milk = Reci_order->milk;
 
     // get the info of toppings
-    if (Reci_order->toppings == nullptr) {
+    if (Reci_order->toppings == nullptr)
+    {
         newDrink->toppings = nullptr;
-    } else {
+    }
+    else
+    {
         // create the head node for the new list
-        ToppingListNode* srcNode = Reci_order->toppings;
-        ToppingListNode* dstHead = new ToppingListNode;
-        dstHead->topping = srcNode->topping;  
-        dstHead->next    = nullptr;
+        ToppingListNode *srcNode = Reci_order->toppings;
+        ToppingListNode *dstHead = new ToppingListNode;
+        dstHead->topping = srcNode->topping;
+        dstHead->next = nullptr;
 
         // use two pointers to traverse, srcNode reads the original list, dstTail builds the new list
-        ToppingListNode* dstTail = dstHead;
+        ToppingListNode *dstTail = dstHead;
         srcNode = srcNode->next;
-        while (srcNode != nullptr) {
+        while (srcNode != nullptr)
+        {
             // for each original node, create a new node and attach it to the tail
-            ToppingListNode* newNode = new ToppingListNode;
+            ToppingListNode *newNode = new ToppingListNode;
             newNode->topping = srcNode->topping;
-            newNode->next    = nullptr;
+            newNode->next = nullptr;
 
-            dstTail->next = newNode;  
-            dstTail = newNode;        
-            srcNode = srcNode->next;  
+            dstTail->next = newNode;
+            dstTail = newNode;
+            srcNode = srcNode->next;
         }
         newDrink->toppings = dstHead;
     }
 
-    //new order, fill the info into it this new order
-    Order* newOrder = new Order;
-    newOrder->number     = number;
-    newOrder->drink      = newDrink;
+    // new order, fill the info into it this new order
+    Order *newOrder = new Order;
+    newOrder->number = number;
+    newOrder->drink = newDrink;
     newOrder->sugarLevel = sugarLevel;
-    newOrder->next       = nullptr;
+    newOrder->next = nullptr;
 
     // calories cal
     int totalCal = newDrink->milk->calories;
     {
-        ToppingListNode* pointer_topping_calor = newDrink->toppings;
-        while (pointer_topping_calor != nullptr) {
-            totalCal += pointer_topping_calor ->topping->calories;
-            pointer_topping_calor  = pointer_topping_calor ->next;
+        ToppingListNode *pointer_topping_calor = newDrink->toppings;
+        while (pointer_topping_calor != nullptr)
+        {
+            totalCal += pointer_topping_calor->topping->calories;
+            pointer_topping_calor = pointer_topping_calor->next;
         }
     }
     newOrder->calories = totalCal;
 
-    //caffine cal
+    // caffine cal
     newOrder->caffeine = newDrink->tea->caffeine;
 
-    //insert into pending list
-    // at first
-    if (pending == nullptr || number < pending->number) {
+    // insert into pending list
+    //  at first
+    if (pending == nullptr || number < pending->number)
+    {
         newOrder->next = pending;
-        pending        = newOrder;
-    } 
-    //find the specific place
-    else {
-        Order* current = pending;
-        while (current->next != nullptr && current->next->number < number) {
+        pending = newOrder;
+    }
+    // find the specific place
+    else
+    {
+        Order *current = pending;
+        while (current->next != nullptr && current->next->number < number)
+        {
             current = current->next;
         }
         newOrder->next = current->next;
-        current->next  = newOrder;
+        current->next = newOrder;
     }
     return true;
+}
+
+// helper function used in 4.3.1 and 4.3.2
+// 1. find order in pending list by order number
+Order *find_order(Order *pending, int number)
+{
+    // start from head pointer
+    Order *ptr = pending;
+    while (ptr != nullptr)
+    {
+        // if order number matches, return it
+        if (ptr->number == number)
+        {
+            return ptr;
+        }
+        // otherwise, move to next order
+        ptr = ptr->next;
+    }
+    // not found after traversal
+    return nullptr;
+}
+
+// 2. find topping in toppingType database list
+ToppingType *find_topping_type(ToppingType *head, const char *name)
+{
+    // start from the list head
+    ToppingType *ptr = head;
+    while (ptr != nullptr)
+    {
+        if (strcmp(ptr->name, name) == 0)
+        {
+            return ptr;
+        }
+        ptr = ptr->next;
+    }
+    return nullptr;
+}
+
+// 3. find specific topping in an order's toppings list
+bool find_topping_in_order(
+    ToppingListNode *head,
+    const char *name,
+    ToppingListNode *&prev,
+    ToppingListNode *&cur)
+{
+    prev = nullptr;
+    cur = head;
+    // traverse until cur==nullptr or name matches
+    while (cur != nullptr)
+    {
+        if (strcmp(cur->topping->name, name) == 0)
+        {
+            return true; // found
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+    return false; // not found
 }
 
 /**
@@ -909,10 +975,48 @@ bool create_order(Order *&pending, const int number, const char drink[], Drink *
  */
 bool add_topping_to_order(const int number, const char topping[], ToppingType *toppingTypes, Order *pending)
 {
-    // TODO
-    return false; // you many remove this line if you want
-}
+    // step1. check the order exist or not
+    Order *Order_Pointer = find_order(pending, number);
+    if (Order_Pointer == nullptr)
+    {
+        return false;
+    }
 
+    // step2. same toppings?
+    ToppingListNode *Previous_Node = nullptr;
+    ToppingListNode *Current_Node = nullptr;
+    if (find_topping_in_order(Order_Pointer->drink->toppings, topping, Previous_Node, Current_Node))
+    {
+        return false;
+    }
+
+    // step3. topping type check
+    ToppingType *Topping_Type_Pointer = find_topping_type(toppingTypes, topping);
+    if (Topping_Type_Pointer == nullptr)
+    {
+        return false;
+    }
+
+    // step 4. insert
+    ToppingListNode *New_Node = new ToppingListNode;
+    New_Node->topping = Topping_Type_Pointer;
+    New_Node->next = nullptr;
+
+    if (Previous_Node == nullptr)
+    {
+        New_Node->next = Order_Pointer->drink->toppings;
+        Order_Pointer->drink->toppings = New_Node;
+    }
+    else
+    {
+        New_Node->next = Previous_Node->next;
+        Previous_Node->next = New_Node;
+    }
+
+    Order_Pointer->calories += Topping_Type_Pointer->calories;
+
+    return true;
+}
 /**
  * function remove_topping_from_order removes a topping from a pending order's drink
  * and subtracts the topping's calories from the order's calorie count
@@ -929,8 +1033,44 @@ bool add_topping_to_order(const int number, const char topping[], ToppingType *t
  */
 bool remove_topping_from_order(const int number, const char topping[], Order *pending)
 {
-    // TODO
-    return false; // you many remove this line if you want
+    // step1. check if the order exists
+    Order *Order_Pointer = find_order(pending, number);
+    if (Order_Pointer == nullptr)
+    {
+        return false;
+    }
+
+    // step2. check if any toppings exist
+    if (Order_Pointer->drink->toppings == nullptr)
+    {
+        return false;
+    }
+
+    // step3. find the specified topping node and its previous node in the order's toppings list
+    ToppingListNode *Previous_Node = nullptr;
+    ToppingListNode *Current_Node = nullptr;
+    if (!find_topping_in_order(Order_Pointer->drink->toppings, topping, Previous_Node, Current_Node))
+    {
+        return false; // topping not found in the order
+    }
+
+    // step4. delete the node
+    if (Previous_Node == nullptr)
+    {
+        // deleting the first node
+        Order_Pointer->drink->toppings = Current_Node->next;
+    }
+    else
+    {
+        // deleting a middle or last node
+        Previous_Node->next = Current_Node->next;
+    }
+
+    Order_Pointer->calories -= Current_Node->topping->calories;
+
+    delete Current_Node; // assuming the node was allocated with 'new ToppingListNode'
+
+    return true;
 }
 
 /**
@@ -947,8 +1087,83 @@ bool remove_topping_from_order(const int number, const char topping[], Order *pe
  */
 bool build_replacement_list(MilkType *milkTypes, ReplacementListNode *&replacement)
 {
-    // TODO
-    return false; // you many remove this line if you want
+    if (milkTypes == nullptr)
+    {
+        return false;
+    } // if milkTypes is an empty list, then return false;
+
+    // step 1. copy to a temporary linear linked list ---
+    ReplacementListNode *linear_head = nullptr;
+    ReplacementListNode *linear_tail = nullptr;
+    MilkType *current_milk_type = milkTypes;
+    while (current_milk_type != nullptr)
+    {
+        // create a new node for each original node
+        ReplacementListNode *new_node = new ReplacementListNode;
+        new_node->milk = current_milk_type; // keep reference to original MilkType
+        new_node->next = nullptr;
+
+        // insert to the end of the temporary list
+        if (linear_head == nullptr)
+        {
+            linear_head = linear_tail = new_node;
+        }
+        else
+        {
+            linear_tail->next = new_node;
+            linear_tail = new_node;
+        }
+        current_milk_type = current_milk_type->next;
+    }
+
+    // step 2. repeatedly select the smallest node from the temporary list to build a sorted list ---
+    ReplacementListNode *sorted_head = nullptr;
+    ReplacementListNode *sorted_tail = nullptr;
+    while (linear_head != nullptr)
+    {
+        // find the node with the smallest calories in linear_head list
+        ReplacementListNode *min_previous_node = nullptr;
+        ReplacementListNode *min_node = linear_head;
+        ReplacementListNode *previous_node = linear_head;
+        ReplacementListNode *iterator_node = linear_head->next;
+        while (iterator_node != nullptr)
+        {
+            if (iterator_node->milk->calories < min_node->milk->calories)
+            {
+                min_previous_node = previous_node;
+                min_node = iterator_node;
+            }
+            previous_node = iterator_node;
+            iterator_node = iterator_node->next;
+        }
+        // remove min_node from the temporary list
+        if (min_previous_node == nullptr)
+        {
+            // the smallest node is the head node
+            linear_head = min_node->next;
+        }
+        else
+        {
+            min_previous_node->next = min_node->next;
+        }
+        // append min_node to the end of the sorted list
+        min_node->next = nullptr;
+        if (sorted_head == nullptr)
+        {
+            sorted_head = sorted_tail = min_node;
+        }
+        else
+        {
+            sorted_tail->next = min_node;
+            sorted_tail = min_node;
+        }
+    }
+
+    // step 3. form a circular linked list ---
+    // Also., at this point, sorted_tail points to the last node
+    sorted_tail->next = sorted_head;
+    replacement = sorted_head;
+    return true;
 }
 
 /**
@@ -966,8 +1181,39 @@ bool build_replacement_list(MilkType *milkTypes, ReplacementListNode *&replaceme
  */
 MilkType *find_available_in_replacement_circle(MilkType *targetMilk, ReplacementListNode *replacement)
 {
-    // TODO
-    return nullptr; // you many remove this line if you want
+    // 1. nullptr case
+    if (replacement == nullptr)
+    {
+        return nullptr;
+    }
+
+    // 2. find targetMilk
+    ReplacementListNode *start = replacement;
+    bool found = false;
+    do
+    {
+        if (start->milk == targetMilk)
+        {
+            found = true;
+            break;
+        }
+        start = start->next;
+    } while (start != replacement);
+
+    // 3.not found
+    if (!found)
+        return nullptr;
+
+    // 4. search for stock > 0 from next
+    ReplacementListNode *iter = start->next;
+    while (iter != start)
+    {
+        if (iter->milk->stock > 0)
+            return iter->milk;
+        iter = iter->next;
+    }
+
+    return nullptr;
 }
 
 /**
@@ -990,10 +1236,92 @@ MilkType *find_available_in_replacement_circle(MilkType *targetMilk, Replacement
  *         ORDER_READY_PERFECT (1) if the order is processed with all original ingredients
  *         ORDER_READY_MODIFIED (2) if the order is processed with substitutions or omissions
  */
-int get_order_ready(const int number, Order *&pending, Order *ready[], ReplacementListNode *replacement)
+int get_order_ready(const int order_number, Order *&pending_orders, Order *ready_orders[], ReplacementListNode *replacement_list)
 {
-    // TODO
-    return 0; // you many remove this line if you want
+    bool modified = false;
+
+
+
+    // check if pending list is empty or order not found
+    if (pending_orders == nullptr)
+    {
+        return 0;
+    }
+    Order *previous_order = nullptr;
+    Order *current_order = pending_orders;
+    while (current_order->number != order_number && current_order)
+    {
+        previous_order = current_order;
+        current_order = current_order->next;
+    }
+    if (current_order == nullptr)
+    {
+        return 0;
+    }
+
+    // remove the order from pending list
+    if (previous_order == nullptr)
+    {
+        pending_orders = current_order->next;
+    }
+    else
+    {
+        previous_order->next = current_order->next;
+    }
+    current_order->next = nullptr;
+
+    // check milk stock and replace if necessary
+    if (current_order->drink->milk->stock > 0)
+    {
+        current_order->drink->milk->stock--;
+    }
+    else
+    {
+        MilkType *replacement_milk = find_available_in_replacement_circle(
+            current_order->drink->milk, replacement_list);
+        if (replacement_milk == nullptr)
+        {
+            return 0;
+        }
+        current_order->drink->milk = replacement_milk;
+        modified = true;
+    }
+
+    // check and remove unavailable toppings
+    ToppingListNode *previous_topping = nullptr;
+    ToppingListNode *current_topping = current_order->drink->toppings;
+    while (current_topping)
+    {
+        if (current_topping->topping->stock > 0)
+        {
+            current_topping->topping->stock--;
+            previous_topping = current_topping;
+            current_topping = current_topping->next;
+        }
+        else
+        {
+            ToppingListNode *topping_to_delete = current_topping;
+            if (previous_topping == nullptr)
+            {
+                current_order->drink->toppings = current_topping->next;
+                current_topping = current_order->drink->toppings;
+            }
+            else
+            {
+                previous_topping->next = current_topping->next;
+                current_topping = previous_topping->next;
+            }
+            delete topping_to_delete;
+            modified = true;
+        }
+    }
+
+    // move the order to ready list
+    int bucket = order_number % 10;
+    current_order->next = ready_orders[bucket];
+    ready_orders[bucket] = current_order;
+
+    return modified ? 2 : 1;
 }
 
 // === Region: Destructors ===
@@ -1006,8 +1334,30 @@ int get_order_ready(const int number, Order *&pending, Order *ready[], Replaceme
  */
 void delete_database(TeaType *&teaTypes, MilkType *&milkTypes, ToppingType *&toppingTypes)
 {
-    // TODO
-    return; // you many remove this line if you want
+    // delete TeaType linked list
+    TeaType *teatea = teaTypes;
+    while (teatea != nullptr)
+    {
+        TeaType *a = teatea->next;
+        delete teatea;
+        teatea = a;
+    }
+    // delete MilkType ll
+    MilkType *milkmilk = milkTypes;
+    while (milkmilk != nullptr)
+    {
+        MilkType *b = milkmilk->next;
+        delete milkmilk;
+        milkmilk = b;
+    }
+    // delete ToppingType ll
+    ToppingType *toppingtopping = toppingTypes;
+    while (toppingtopping != nullptr)
+    {
+        ToppingType *c = toppingtopping->next;
+        delete toppingtopping;
+        toppingtopping = c;
+    }
 }
 
 /**
@@ -1018,8 +1368,15 @@ void delete_database(TeaType *&teaTypes, MilkType *&milkTypes, ToppingType *&top
  */
 void delete_recipe(Drink **&recipes, int numRecipes)
 {
-    // TODO
-    return; // you many remove this line if you want
+    // delete each Drink*
+    for (int i = 0; i < numRecipes; ++i)
+    {
+        delete recipes[i];
+    }
+    // for pointer array
+    delete[] recipes;
+    recipes = nullptr;
+    numRecipes = 0;
 }
 
 /**
@@ -1029,8 +1386,24 @@ void delete_recipe(Drink **&recipes, int numRecipes)
  */
 void delete_pending_orders(Order *&pending)
 {
-    // TODO
-    return; // you many remove this line if you want
+    while (pending != nullptr)
+    {
+        Order *current_order = pending;
+        pending = pending->next; // break head
+
+        // delete toppings list
+        ToppingListNode *topping_node = current_order->drink->toppings;
+        while (topping_node != nullptr)
+        {
+            ToppingListNode *next_topping = topping_node->next;
+            delete topping_node;
+            topping_node = next_topping;
+        }
+        // delete drink object
+        delete current_order->drink;
+        // delete order node
+        delete current_order;
+    }
 }
 
 /**
@@ -1038,10 +1411,33 @@ void delete_pending_orders(Order *&pending)
  *
  * @param ready: an array of pointers to the head of the ready order list
  */
-void delete_ready_orders(Order *ready[])
+void delete_ready_orders(Order *ready_orders[])
 {
-    // TODO
-    return; // you many remove this line if you want
+    for (int index = 0; index < 10; ++index)
+    {
+        Order *current_order = ready_orders[index];
+        while (current_order != nullptr)
+        {
+            Order *order_to_delete = current_order;
+            current_order = current_order->next;
+
+            // Delete toppings list
+            ToppingListNode *topping_node = order_to_delete->drink->toppings;
+            while (topping_node != nullptr)
+            {
+                ToppingListNode *next_topping_node = topping_node->next;
+                delete topping_node;
+                topping_node = next_topping_node;
+            }
+
+            // Delete drink object
+            delete order_to_delete->drink;
+
+            // Delete order node
+            delete order_to_delete;
+        }
+        ready_orders[index] = nullptr;
+    }
 }
 
 /**
@@ -1051,6 +1447,24 @@ void delete_ready_orders(Order *ready[])
  */
 void delete_replacement_circle(ReplacementListNode *&replacement)
 {
-    // TODO
-    return; // you many remove this line if you want
+    if (replacement == nullptr)
+        return;
+
+    // make the tail's next = nullptr
+    ReplacementListNode *slow_pointer = replacement;
+    while (slow_pointer->next != replacement)
+    {
+        slow_pointer = slow_pointer->next;
+    }
+    slow_pointer->next = nullptr;
+
+    // delete just like a normal linked list
+    ReplacementListNode *current_node = replacement;
+    while (current_node != nullptr)
+    {
+        ReplacementListNode *temp_node = current_node->next;
+        delete current_node;
+        current_node = temp_node;
+    }
+    replacement = nullptr;
 }
