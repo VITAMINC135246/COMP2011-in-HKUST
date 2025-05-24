@@ -8,6 +8,8 @@ void alloc_demo(){
     *a = M_PI;
     cout<<"*a is"<< *a << " and the address in heap is "<< a<< endl;
     delete a;
+    a = nullptr;
+    cout << "after delete, a = " << a << '\n';
 }
 
 
